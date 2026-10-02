@@ -1,0 +1,18 @@
+from sqlalchemy import Integer, String, Numeric, DateTime, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
+from decimal import Decimal
+from database import Base
+
+class Medicion(Base):
+    __tablename__ = "mediciones"
+    
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    estudiante_id: Mapped[int] = mapped_column(ForeignKey("estudiantes.id"), nullable=False)
+    variable: Mapped[str] = mapped_column(String(50), nullable=False)
+    valor: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
+    unidad: Mapped[str] = mapped_column(String(20), nullable=False)
+    fecha_hora: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    # Relación con el estudiante
+    estudiante = relationship("Estudiante", back_populates="mediciones")
