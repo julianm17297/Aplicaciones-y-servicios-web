@@ -1,24 +1,12 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, Field
+from typing import Dict
 from datetime import datetime
-from decimal import Decimal
 
-class MedicionBase(BaseModel):
-    estudiante_id: int
-    variable: str
-    valor: Decimal
-    unidad: str
-    fecha_hora: datetime
+class MeasurementValue(BaseModel):
+    value: float
+    unit: str
 
-class MedicionCreate(MedicionBase):
-    pass
-
-class MedicionUpdate(BaseModel):
-    estudiante_id: int | None = None
-    variable: str | None = None
-    valor: Decimal | None = None
-    unidad: str | None = None
-    fecha_hora: datetime | None = None
-
-class MedicionResponse(MedicionBase):
-    model_config = ConfigDict(from_attributes=True)
-    id: int
+class PayloadMQTT(BaseModel):
+    sensor_id: str = Field(..., description="Código del sensor, ej. GAS-003")
+    timestamp: datetime = Field(..., description="Timestamp en formato UTC")
+    measurements: Dict[str, MeasurementValue] = Field(..., description="Diccionario de magnitudes")

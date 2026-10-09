@@ -1,18 +1,13 @@
-from sqlalchemy import Integer, String, Numeric, DateTime, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import datetime
-from decimal import Decimal
-from database import Base
+from sqlalchemy import Column, Integer, Numeric, DateTime, ForeignKey, BigInteger
+from sqlalchemy.sql import func
+from app.database.connection import Base
 
 class Medicion(Base):
     __tablename__ = "mediciones"
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    estudiante_id: Mapped[int] = mapped_column(ForeignKey("estudiantes.id"), nullable=False)
-    variable: Mapped[str] = mapped_column(String(50), nullable=False)
-    valor: Mapped[Decimal] = mapped_column(Numeric, nullable=False)
-    unidad: Mapped[str] = mapped_column(String(20), nullable=False)
-    fecha_hora: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-
-    # Relación con el estudiante
-    estudiante = relationship("Estudiante", back_populates="mediciones")
+    id = Column(BigInteger, primary_key=True, index=True)
+    # FK apunta a la configuración específica de la magnitud del sensor
+    sensor_magnitud_id = Column(Integer, ForeignKey("sensor_magnitudes.id", ondelete="RESTRICT", onupdate="CASCADE"), nullable=False)
+    valor = Column(Numeric(12, 4), nullable=False)
+    timestamp_utc = Column(DateTime(timezone=True), nullable=False)
+    fecha_recepcion = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
