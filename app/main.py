@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.mqtt.client import start_mqtt_client
+from app.api import sensor, sensor_magnitud, medicion
 
 # Variable para guardar la instancia del cliente y poder detenerla luego
 mqtt_client = None
@@ -21,6 +22,10 @@ async def lifespan(app: FastAPI):
         mqtt_client.disconnect()
 
 app = FastAPI(title="API IoT - Taller 2", lifespan=lifespan)
+
+app.include_router(sensor.router)
+app.include_router(sensor_magnitud.router)
+app.include_router(medicion.router)
 
 @app.get("/")
 def root():
